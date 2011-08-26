@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Use this Ant script for convenience with creating a distribution of mapsforge.
+The script in not intended for building the project. Use Eclipse for this
+purpose.
+-->
+<project name="mapsforge-mapfile-tools">
+	<property name="mapsforge.version" value="0.2.4" />
+	<property name="mapsforge.download.tmpdir" value="tmp" />
+	<property name="mapsforge.osmosis.xmx" value="1g" />
+	<property name="mapsforge.osmosis.xms" value="1g" />
+
+	<target name="download-libs">
+		<mkdir dir="${mapsforge.download.tmpdir}" />
+		<echo>Downloading required libraries...</echo>
+		<get dest="${mapsforge.download.tmpdir}" src="http://bretth.dev.openstreetmap.org/osmosis-build/osmosis-0.39.tgz" usetimestamp="true " />
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/files/mapsforge-mapfile-writer-0.2.4.jar" usetimestamp="true" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/trove-3.0.0rc1.jar" />
+	</target>
+
+	<!-- TODO: Wildcards for "osmosis-0.39" -->
+	<target name="extract-osmosis">
+		<untar src="${mapsforge.download.tmpdir}/osmosis-0.39.tgz" dest="." compression="gzip" />
+		<move file="osmosis-0.39" tofile="osmosis">
+		</move>
+	</target>
+
+	<target name="copy-plugins">
+		<mkdir dir="${user.home}/.openstreetmap" />
+		<mkdir dir="${user.home}/.openstreetmap/osmosis" />
+		<mkdir dir="${user.home}/.openstreetmap/osmosis/plugins" />
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-mapfile-writer-0.2.4.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+		<copy file="${mapsforge.download.tmpdir}/trove-3.0.0rc1.jar" todir="osmosis/lib/default/" />
+	</target>
+
+	<target name="install" depends="download-libs,extract-osmosis,copy-plugins">
+	</target>
+
+	<target name="clean">
+		<delete dir="${mapsforge.download.tmpdir}">
+		</delete>
+	</target>
+
+	<target name="uninstall">
+		<delete dir="osmosis">
+		</delete>
+		<delete file="">
+			<fileset dir="${user.home}/.openstreetmap/osmosis/plugins/" includes="**/mapsforge-*" />
+			<fileset dir="osmosis" />
+		</delete>
+	</target>
+
+	<target name="osm2map">
+		<echo>Creating .map file </echo>
+		<echo>Input file: ${in}</echo>
+		<echo>Output file: ${out}</echo>
+
+		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
+			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
+			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
+			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
+			<arg line="--rb file=${in} --mw file=${out}" />
+		</java>
+	</target>
+
+
+</project>
