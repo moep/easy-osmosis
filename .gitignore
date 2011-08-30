@@ -1,3 +1,5 @@
 tmp/
 maps/
 osmosis/
+.ant-targets-build.xml
+.project

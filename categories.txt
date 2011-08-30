@@ -1,0 +1,119 @@
+Root; ;
+
+Food & Drink; Root;
+Restaurant; Food & Drink; amenity.restaurant
+Fast Food; Food & Drink; amenity.fast_food
+Cafe; Food & Drink; amenity.cafe
+Food Court; Food & Drink; amenity.food_court
+Drinking Water; Food & Drink; amenity.drinking_water
+Pub; Food & Drink; amenity.pub
+Bar; Food & Drink; amenity.bar
+Biergarten; Food & Drink; amenity.biergarten
+Ice-Cream; Food & Drink; amenity.ice_cream
+Vending Machine; Food & Drink; amenity.vending_machine
+Alpine Hut; Food & Drink; tourism.alpine_hut
+
+Transportation; Root;
+Rentals; Transportation;
+Bicycle Rental; Rentals; amenity.bicycle_rental
+Car Rental; Rentals; amenity.car_rental
+Car Sharing; Rentals; amenity.car_sharing
+Fuel Stations; Transportation; amenity.fuel
+Taxi Stops; Transportation; amenity.taxi
+Parking Spaces; Transportation; amenity.parking
+Public Transport; Transportation; public_transport.stop_position
+
+Financial; Root;
+ATM; Financial; amenity.atm
+Bank; Financial; amenity.bank
+Currency Exchange; Financial; amenity.bureau_de_change
+
+Healthcare; Root; 
+Pharmacy; Healthcare; amenity.pharmacy
+Hospital; Healthcare; amenity.hospital
+Doctor; Healthcare; amenity.doctors, amenity.dentist
+Veterenary; Healthcare; amenity.veterinary
+
+Entertainment; Root; 
+Museum; Entertainment; tourism.museum
+Cinema; Entertainment; amenity.cinema
+Night Club; Entertainment; amenity.nightclub
+Theatre; Entertainment; amenity.theatre
+Theme Park; Entertainment; tourism.theme_park
+Zoo; Entertainment; tourism.zoo
+Strip Club; Entertainment; amenity.stripclub
+Brothel; Entertainment; amenity.brothel
+
+Others; Root; 
+Embassy; Others; amenity.embassy
+Market Place; Others; amenity.marketplace
+Churches; Others; amenity.place_of_worship
+Police; Others; amenity.police
+Post Office; Others; amenity.post_office
+Post Box; Others; amenity.post_box
+Telephone; Others; amenity.telephone
+Toilets; Others; amenity.toilets
+Shelter; Others; amenity.shelter
+Information; Others; tourism.information
+Library; Others; amenity.library
+
+Accommodation; Root; 
+Bed & Breakfast; Accommodation; tourism.bed_and_breakfast
+Camping Site; Accommodation; tourism.camp_site
+Caravan Site; Accommodation; tourism.caravan_site
+Guest House; Accommodation; tourism.guest_house
+Hostel; Accommodation; tourism.hostel
+Hotel; Accommodation; tourism.hotel
+Motel; Accommodation; tourism.motel
+Alpine Hut; Accommodation; tourism.alpine_hut
+
+Attraction; Root; tourism.attraction
+Viewpoint; Attraction; tourism.viewpoint
+Castle; Attraction; historic.castle
+
+Shops; Root;
+
+Food Shops; Shops;
+Supermarket; Food Shops; shop.supermarket
+Convenience; Food Shops; shop.convenience
+Alcohol; Food Shops; shop.alcohol
+Bakery; Food Shops; shop.bakery
+Beverages; Food Shops; shop.beverages
+Butcher; Food Shops; shop.butcher
+Confectionery; Food Shops; shop.confectionery
+Deli; Food Shops; shop.deli
+General; Food Shops; shop.general
+
+Transportation Shops; Shops;
+Bicycle; Transportation Shops; shop.bicycle
+Car; Transportation Shops; shop.car
+Car Repair; Transportation Shops; shop.car_repair
+Motorcycle; Transportation Shops; shop.motorcycle
+
+Clothing Shops; Shops;
+Boutique; Clothing Shops; shop.boutique
+Outdoor; Clothing Shops; shop.outdoor
+Shoes; Clothing Shops; shop.shoes
+Sports; Clothing Shops; shop.sports
+Clothes; Clothing Shops; shop.clothes
+
+Other Shops; Shops;
+Books; Other Shops; shop.books
+Chemist; Other Shops; shop.chemist
+Computer; Other Shops; shop.computer
+Copyshop; Other Shops; shop.copyshop
+Department Store; Other Shops; shop.department_store
+Electronics; Other Shops; shop.electronics
+Florist; Other Shops; shop.florist
+Gift; Other Shops; shop.gift
+Hairdresser; Other Shops; shop.hairdresser
+Hardware; Other Shops; shop.hardware
+Jewelry; Other Shops; shop.jewelry
+Kiosk; Other Shops; shop.kiosk
+Laundry; Other Shops; shop.laundry
+Mall; Other Shops; shop.mall
+Newsagent; Other Shops; shop.newsagent
+Optician; Other Shops; shop.optitian
+Tobacco; Other Shops; shop.tobacco
+Toys; Other Shops; shop.toys
+Video; Other Shops; shop.video

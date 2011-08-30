@@ -12,10 +12,22 @@ purpose.
 
 	<target name="download-libs">
 		<mkdir dir="${mapsforge.download.tmpdir}" />
-		<echo>Downloading required libraries...</echo>
+		<echo>Downloading mapsforge libraries...</echo>
+		
+		<!-- Osmosis binaries -->
 		<get dest="${mapsforge.download.tmpdir}" src="http://bretth.dev.openstreetmap.org/osmosis-build/osmosis-0.39.tgz" usetimestamp="true " />
+		
+		<!-- Mapsforge jars -->
+		<echo>Mapsforge jars</echo>
 		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/files/mapsforge-mapfile-writer-0.2.4.jar" usetimestamp="true" />
-		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/trove-3.0.0rc1.jar" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-poi-osmosis-0.2.4.jar" usetimestamp="true" />
+		
+		<!-- Third party jars -->
+		<echo>Third party jars</echo>
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/trove-3.0.0rc1.jar" usetimestamp="true"/>
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge-gpl3.googlecode.com/svn/trunk/mapsforge-gpl3/lib/perst-421.jar" usetimestamp="true" />
+		<!-- <get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/tags/0.2.4/mapsforge-map-0.2.4.jar" usetimestamp="true" /> -->
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-core-0.2.4.jar" usetimestamp="true" />
 	</target>
 
 	<!-- TODO: Wildcards for "osmosis-0.39" -->
@@ -26,11 +38,20 @@ purpose.
 	</target>
 
 	<target name="copy-plugins">
+		<!-- Create directories -->
 		<mkdir dir="${user.home}/.openstreetmap" />
 		<mkdir dir="${user.home}/.openstreetmap/osmosis" />
 		<mkdir dir="${user.home}/.openstreetmap/osmosis/plugins" />
+		
+		<!-- Plugins for osmosis  -->
 		<copy file="${mapsforge.download.tmpdir}/mapsforge-mapfile-writer-0.2.4.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-poi-osmosis-0.2.4.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+		
+		<!-- Third party libraries --> 
 		<copy file="${mapsforge.download.tmpdir}/trove-3.0.0rc1.jar" todir="osmosis/lib/default/" />
+		<copy file="${mapsforge.download.tmpdir}/perst-421.jar" todir="osmosis/lib/default/" />
+		<!-- <copy file="${mapsforge.download.tmpdir}/mapsforge-map-0.2.4.jar" todir="osmosis/lib/default/" /> -->
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-core-0.2.4.jar" todir="osmosis/lib/default/" />
 	</target>
 
 	<target name="install" depends="download-libs,extract-osmosis,copy-plugins">
@@ -45,8 +66,8 @@ purpose.
 		<delete dir="osmosis">
 		</delete>
 		<delete file="">
+			<!-- <fileset dir="./osmosis" /> -->
 			<fileset dir="${user.home}/.openstreetmap/osmosis/plugins/" includes="**/mapsforge-*" />
-			<fileset dir="osmosis" />
 		</delete>
 	</target>
 
@@ -63,6 +84,24 @@ purpose.
 			<arg line="--rb file=${in} --mw file=${out}" />
 		</java>
 	</target>
+	
+	<target name="osm2poi">
+			<echo>Creating .poi file </echo>
+			<echo>Input file: ${in}</echo>
+			<echo>Output file: ${out}</echo>
+			
+			<!-- Remove old file to prevent a bug with Perst -->
+			<delete file="${out}" />
+		
+			<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
+				<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
+				<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+				<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
+				<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
+				<!-- TODO externalize file paths -->
+				<arg line="--rb file=${in} --poiWriter poiWriter-categoryFile=categories.txt poiWriter-perstFile=${out}" />
+			</java>
+		</target>
 
 
 </project>
