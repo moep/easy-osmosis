@@ -114,8 +114,8 @@ purpose.
 		<echo>Output file: gen/${basename}.map</echo>
 
 		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
-			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
-			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<sysproperty key="app.home" value="./osmosis/" />
+			<sysproperty key="classworlds.conf" value="./osmosis/config/plexus.conf" />
 			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
 			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
 			<arg line="--rb file=${in} --mw file=gen/${basename}.map" />
@@ -134,8 +134,8 @@ purpose.
 		<delete file="gen/${basename}.poi" />
 
 		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
-			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
-			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<sysproperty key="app.home" value="./osmosis/" />
+			<sysproperty key="classworlds.conf" value="./osmosis/config/plexus.conf" />
 			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
 			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
 			<!-- TODO externalize file paths -->
@@ -147,8 +147,8 @@ purpose.
 	<target name="extract-rg">
 		<echo>Extracting routing graph to tmp/rg.sql</echo>
 		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
-			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
-			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<sysproperty key="app.home" value="./osmosis/" />
+			<sysproperty key="classworlds.conf" value="./osmosis/config/plexus.conf" />
 			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
 			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
 			<arg line="--rb file=${in} --rgw file=tmp/rg.sql" />

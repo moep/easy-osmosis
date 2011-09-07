@@ -2,5 +2,6 @@ tmp/
 maps/
 osmosis/
 gen/
+lib/
 .ant-targets-build.xml
 .project
