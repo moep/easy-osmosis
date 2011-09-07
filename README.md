@@ -10,10 +10,15 @@ Map data can be downloaded from http://download.geofabrik.de/osm/.
 2. `ant install`
 
 ## Map creation
+<<<<<<< HEAD
 The generated files can be found in the gen/ folder.  
 Map files: `ant osm2map -Din=your_map.pbf.osm`  
 POI DB: `ant osm2poi -Din=your_map.pbf.osm`  
 Highway Hierarchies routing graph: `ant osm2hh -Din=your_map.pbf.osm`
+=======
+Map files: `ant osm2map -Din=your_map.pbf.osm  -Dout=mapsforge_map.map`  
+POI DB: `ant osm2poi -Din=your_map.pbf.osm  -Dout=mapsforge_map.poi`
+>>>>>>> d0f15ad4c427e81a4bccc70bc18cb1228eea6cae
 
 ## Uninstall
 Remove temporary files: `ant clean`  
