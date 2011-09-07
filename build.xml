@@ -9,27 +9,48 @@ purpose.
 	<property name="mapsforge.download.tmpdir" value="tmp" />
 	<property name="mapsforge.osmosis.xmx" value="1g" />
 	<property name="mapsforge.osmosis.xms" value="1g" />
+	<property name="mapsforge.hhRGWriter.xmx" value="1g" />
+	<property name="mapsforge.hhRGWriter.xms" value="1g" />
 
+	<!-- Database for highway hierarchies preprocessing -->
+	<!-- Must be a postgres database -->
+	<property name="db.binary" value="psql" />
+	<property name="db.host" value="127.0.0.1" />
+	<property name="db.port" value="5432" />
+	<property name="db.name" value="db_name" />
+	<property name="db.user" value="db_user_name" />
+	<property name="db.pass" value="db_password" />
+
+	<!-- Downloads all required libraries -->
 	<target name="download-libs">
 		<mkdir dir="${mapsforge.download.tmpdir}" />
 		<echo>Downloading mapsforge libraries...</echo>
-		
+
 		<!-- Osmosis binaries -->
 		<get dest="${mapsforge.download.tmpdir}" src="http://bretth.dev.openstreetmap.org/osmosis-build/osmosis-0.39.tgz" usetimestamp="true " />
-		
-		<!-- Mapsforge jars -->
+
+		<!-- Mapsforge jars (Osmosis tasks) -->
 		<echo>Mapsforge jars</echo>
-		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/files/mapsforge-mapfile-writer-0.2.4.jar" usetimestamp="true" />
-		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-poi-osmosis-0.2.4.jar" usetimestamp="true" />
-		
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/files/mapsforge-mapfile-writer-${mapsforge.version}.jar" usetimestamp="true" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-poi-osmosis-${mapsforge.version}.jar" usetimestamp="true" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-routinggraph-writer-${mapsforge.version}.jar" usetimestamp="true" />
+
+
+
 		<!-- Third party jars -->
 		<echo>Third party jars</echo>
-		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/trove-3.0.0rc1.jar" usetimestamp="true"/>
+		<!-- Used for POIs -->
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/trove-3.0.0rc1.jar" usetimestamp="true" />
 		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge-gpl3.googlecode.com/svn/trunk/mapsforge-gpl3/lib/perst-421.jar" usetimestamp="true" />
-		<!-- <get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/tags/0.2.4/mapsforge-map-0.2.4.jar" usetimestamp="true" /> -->
-		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-core-0.2.4.jar" usetimestamp="true" />
+		<!-- Used for map generation -->
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-core-${mapsforge.version}.jar" usetimestamp="true" />
+		<!-- Used for HH graph generation -->
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/postgresql-8.4-701.jdbc4.jar" usetimestamp="true" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://dl.dropbox.com/u/36578214/mapsforge-offboard-routing-0.2.4.jar" usetimestamp="true" />
+		<get dest="${mapsforge.download.tmpdir}" src="http://mapsforge.googlecode.com/svn/trunk/mapsforge/lib/hadoop-0.20.1-core.jar" usetimestamp="true" />
 	</target>
 
+	<!-- Extracts osmosis.tgz to ./osmosis -->
 	<!-- TODO: Wildcards for "osmosis-0.39" -->
 	<target name="extract-osmosis">
 		<untar src="${mapsforge.download.tmpdir}/osmosis-0.39.tgz" dest="." compression="gzip" />
@@ -37,71 +58,136 @@ purpose.
 		</move>
 	</target>
 
+	<!-- Copies plugins and libraries for map generation to osmosis/lib and ~/.openstreetmap/ -->
 	<target name="copy-plugins">
 		<!-- Create directories -->
 		<mkdir dir="${user.home}/.openstreetmap" />
 		<mkdir dir="${user.home}/.openstreetmap/osmosis" />
 		<mkdir dir="${user.home}/.openstreetmap/osmosis/plugins" />
-		
+		<mkdir dir="lib" />
+
 		<!-- Plugins for osmosis  -->
-		<copy file="${mapsforge.download.tmpdir}/mapsforge-mapfile-writer-0.2.4.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
-		<copy file="${mapsforge.download.tmpdir}/mapsforge-poi-osmosis-0.2.4.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
-		
-		<!-- Third party libraries --> 
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-mapfile-writer-${mapsforge.version}.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-poi-osmosis-${mapsforge.version}.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-routinggraph-writer-${mapsforge.version}.jar" todir="${user.home}/.openstreetmap/osmosis/plugins/" />
+
+		<!-- Plugins for HH graph creation -->
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-offboard-routing-${mapsforge.version}.jar" todir="lib" />
+		<copy file="${mapsforge.download.tmpdir}/postgresql-8.4-701.jdbc4.jar" todir="lib" />
+		<copy file="${mapsforge.download.tmpdir}/hadoop-0.20.1-core.jar" todir="lib" />
+
+		<!-- Third party libraries -->
 		<copy file="${mapsforge.download.tmpdir}/trove-3.0.0rc1.jar" todir="osmosis/lib/default/" />
 		<copy file="${mapsforge.download.tmpdir}/perst-421.jar" todir="osmosis/lib/default/" />
-		<!-- <copy file="${mapsforge.download.tmpdir}/mapsforge-map-0.2.4.jar" todir="osmosis/lib/default/" /> -->
-		<copy file="${mapsforge.download.tmpdir}/mapsforge-core-0.2.4.jar" todir="osmosis/lib/default/" />
+		<copy file="${mapsforge.download.tmpdir}/mapsforge-core-${mapsforge.version}.jar" todir="osmosis/lib/default/" />
 	</target>
 
+	<!-- Installs Osmosis and all required plugins / libraries -->
 	<target name="install" depends="download-libs,extract-osmosis,copy-plugins">
+		<mkdir dir="gen" />
 	</target>
 
+	<!-- Removes all downloaded temporary files and generated files -->
 	<target name="clean">
-		<delete dir="${mapsforge.download.tmpdir}">
-		</delete>
+		<delete dir="${mapsforge.download.tmpdir}" />
+		<delete dir="gen" />
 	</target>
 
+	<!-- Removes Osmosis and all installed libraries -->
 	<target name="uninstall">
-		<delete dir="osmosis">
-		</delete>
-		<delete file="">
-			<!-- <fileset dir="./osmosis" /> -->
+		<delete dir="osmosis" />
+		<delete dir="lib" />
+		<delete>
 			<fileset dir="${user.home}/.openstreetmap/osmosis/plugins/" includes="**/mapsforge-*" />
 		</delete>
 	</target>
 
+	<!-- ########################################################################################### -->
+	<!-- # F I L E   G E N E R A T I O N                                                           # -->
+	<!-- ########################################################################################### -->
+
+	<!-- Converts a pbf file to a map file -->
 	<target name="osm2map">
+		<basename file="${in}" property="basename" suffix=".osm.pbf" />
 		<echo>Creating .map file </echo>
 		<echo>Input file: ${in}</echo>
-		<echo>Output file: ${out}</echo>
+		<echo>Output file: gen/${basename}.map</echo>
 
 		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
 			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
 			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
 			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
 			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
-			<arg line="--rb file=${in} --mw file=${out}" />
+			<arg line="--rb file=${in} --mw file=gen/${basename}.map" />
 		</java>
 	</target>
-	
+
+	<!-- Creates a POI database -->
 	<target name="osm2poi">
-			<echo>Creating .poi file </echo>
-			<echo>Input file: ${in}</echo>
-			<echo>Output file: ${out}</echo>
-			
-			<!-- Remove old file to prevent a bug with Perst -->
-			<delete file="${out}" />
-		
-			<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
-				<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
-				<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
-				<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
-				<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
-				<!-- TODO externalize file paths -->
-				<arg line="--rb file=${in} --poiWriter poiWriter-categoryFile=categories.txt poiWriter-perstFile=${out}" />
-			</java>
-		</target>
+		<basename file="${in}" property="basename" suffix=".osm.pbf" />
+		<echo>Creating .poi file </echo>
+		<echo>Input file: ${in}</echo>
+		<echo>Output file: gen/${basename}.poi</echo>
+
+		<!-- Remove old file to prevent a bug with Perst -->
+		<basename file="${in}" property="basename" suffix=".osm.pbf" />
+		<delete file="gen/${basename}.poi" />
+
+		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
+			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
+			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
+			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
+			<!-- TODO externalize file paths -->
+			<arg line="--rb file=${in} --poiWriter poiWriter-categoryFile=config/categories.txt poiWriter-perstFile=gen/${basename}.poi" />
+		</java>
+	</target>
+
+	<!-- Creates temporary SQL dump for creating the HH routing graph -->
+	<target name="extract-rg">
+		<echo>Extracting routing graph to tmp/rg.sql</echo>
+		<java classpath="osmosis/lib/default/plexus-classworlds-2.2.2.jar" classname="org.codehaus.classworlds.Launcher" fork="true">
+			<sysproperty key="app.home" value="/home/moep/tmp/easyosm/osmosis/" />
+			<sysproperty key="classworlds.conf" value="/home/moep/tmp/easyosm/osmosis/config/plexus.conf" />
+			<jvmarg value="-Xmx${mapsforge.osmosis.xmx}" />
+			<jvmarg value="-Xms${mapsforge.osmosis.xms}" />
+			<arg line="--rb file=${in} --rgw file=tmp/rg.sql" />
+		</java>
+	</target>
+
+	<!-- Imports the SQL dump into a postgres DB -->
+	<target name="import-rg">
+		<echo>Importing routing graph into database from tmp/rg.sql$</echo>
+		<echo>User: '${db.user}' Host: '${db.host}' DB: '${db.name}'</echo>
+		<exec executable="${db.binary}">
+			<env key="PGPASSWORD" value="${db.pass}" />
+			<arg line="-U ${db.user}" />
+			<arg line="-d ${db.name}" />
+			<arg line="-h ${db.host}" />
+			<arg line="-p ${db.port}" />
+			<arg line="-f tmp/rg.sql" />
+		</exec>
+	</target>
+
+	<!-- Generate the HH graph file -->
+	<target name="osm2hh" depends="extract-rg, import-rg">
+		<basename file="${in}" property="basename" suffix=".osm.pbf" />
+		<java jvmargs="Xmx${mapsforge.hhRGWriter.xmx} -Xms${mapsforge.hhRGWriter.xms}" classname="org.mapsforge.preprocessing.highwayHierarchies.CommandLineUtil">
+			<arg value="gen/${basename}.mobileHH" />
+			<arg value="--format=mobile" />
+			<arg value="--config-file=config/highway_hierarchies.conf" />
+			<classpath>
+				<pathelement location="lib/mapsforge-offboard-routing-${mapsforge.version}.jar" />
+				<pathelement location="lib/postgresql-8.4-701.jdbc4.jar" />
+				<pathelement location="osmosis/lib/default/trove-3.0.0rc1.jar" />
+				<pathelement location="lib/hadoop-0.20.1-core.jar" />
+			</classpath>
+		</java>
+	</target>
+
+
+
+
 
 
 </project>
